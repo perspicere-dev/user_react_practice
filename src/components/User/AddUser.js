@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 import Card from '../UI/Card';
 import Button from '../UI/Button';
@@ -7,38 +7,47 @@ import Wrapper from '../Helpers/Wraper';
 import styles from './AddUser.module.css';
 
 const AddUser = (props) => {
-  const [enteredUsername, setEnteredUsername] = useState('');
-  const [enteredAge, setEnteredAge] = useState('');
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
+
+//   const [enteredUsername, setEnteredUsername] = useState(''); // due to useRef
+//   const [enteredAge, setEnteredAge] = useState('');
   const [error, setError] = useState();
 
   const addUserHandler = (event) => {
     event.preventDefault();
-    if (enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
+    const enteredName = nameInputRef.current.value;
+    const enteredUserAge = ageInputRef.current.value;
+
+    if (enteredName.trim().length === 0 || enteredUserAge.trim().length === 0) { //swich to enteredName from enteredUsername and enterdAge due to useRef
       setError({
         title: 'Invalid input',
         message: 'Please enter a valid name and age.',
       });
       return;
     }
-    if (+enteredAge < 1) {
+    if (+enteredUserAge < 1) { //swich to enteredUserAge from enteredAge due to useRef
       setError({
         title: 'Invalid age',
         message: 'Please enter a valid age (> 0).',
       });
       return;
     }
-    props.onAddUser(enteredUsername, enteredAge);
-    setEnteredUsername('');
-    setEnteredAge('');
+    props.onAddUser(enteredName, enteredUserAge); // switched from enteredUsername, enteredAge due to useRef
+    nameInputRef.current.value = '';
+    ageInputRef.current.value = ''; //resetting inputs, it is not good to manipulate DOM without REACT but here we reset value entered by user so we can
+    // setEnteredUsername(''); // delete due to useRef
+    // setEnteredAge('');
   };
 
-  const usernameChangeHandler = (event) => {
-    setEnteredUsername(event.target.value);
-  };
+//   const usernameChangeHandler = (event) => { // delete due to useRef
+    // setEnteredAge('');
+//     setEnteredUsername(event.target.value);
+//   };
 
-  const ageChangeHandler = (event) => {
-    setEnteredAge(event.target.value);
-  };
+//   const ageChangeHandler = (event) => {
+//     setEnteredAge(event.target.value);
+//   };
 
   const errorHandler = () => {
     setError(null);
@@ -59,15 +68,17 @@ const AddUser = (props) => {
           <input
             id="username"
             type="text"
-            value={enteredUsername}
-            onChange={usernameChangeHandler}
+            // value={enteredUsername} delete due to useRef
+            // onChange={usernameChangeHandler}
+            ref={nameInputRef}
           />
           <label htmlFor="age">Age (Years)</label>
           <input
             id="age"
             type="number"
-            value={enteredAge}
-            onChange={ageChangeHandler}
+            // value={enteredAge} delete due to useRef
+            // onChange={ageChangeHandler}
+            ref={ageInputRef}
           />
           <Button type="submit">Add User</Button>
         </form>
